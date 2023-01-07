@@ -5,6 +5,7 @@
 <p align="center">
    <img src="https://img.shields.io/badge/Solidity-0.8.9-lightgrey" alt="Solidity Version">
    <img src="https://img.shields.io/badge/HardHat-2.9.7-red" alt="HardHat Version">
+   <img src="https://img.shields.io/badge/Blockchain-BSC-yellow" alt="Blockchain">
    <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
 </p>
 
