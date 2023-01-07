@@ -84,15 +84,7 @@ contract CryptoSpace {
         bool indexed insurance
     );
 
-    constructor(
-        address ownerAddr,
-        address ownerAddr1,
-        address ownerAddr2,
-        address ownerAddr3,
-        address ownerAddr4,
-        address insuranceAddr,
-        address marketingAddr
-    ) {
+    constructor(address ownerAddr, address ownerAddr1, address ownerAddr2, address ownerAddr3, address ownerAddr4, address insuranceAddr, address marketingAddr) {
         serValues();
         startProjectTime = block.timestamp;
         owners[1] = ownerAddr;
@@ -107,14 +99,7 @@ contract CryptoSpace {
             StrId: 1,
             mainStrLvl: owners[1],
             firstStrLvl: [owners[2], owners[3], owners[4], owners[5]],
-            secondStrLvl: [
-                address(0),
-                address(0),
-                address(0),
-                address(0),
-                address(0),
-                address(0)
-            ],
+            secondStrLvl: [address(0), address(0), address(0), address(0), address(0), address(0)],
             freePlace: 6
         });
 
@@ -144,10 +129,7 @@ contract CryptoSpace {
     }
 
     modifier levelIsOpen(uint256 lvl) {
-        require(
-            block.timestamp >= levelStartTime[lvl] && levelStartTime[lvl] > 0,
-            "level closed"
-        );
+        require(block.timestamp >= levelStartTime[lvl] && levelStartTime[lvl] > 0, "level closed");
         _;
     }
 
@@ -169,22 +151,20 @@ contract CryptoSpace {
     }
 
     function buyNewLvl(uint256 lvl) public payable levelIsOpen(lvl) {
-        if (!lvlIsAv[lvl]) {
+        if (!lvlIsAv[lvl])
             _openLevel(lvl);
-        }
         address user = msg.sender;
         uint256 _levelPrice = lvlPrice[lvl];
-        if (users[user].Insurance[lvl]) {
+        if (users[user].Insurance[lvl])
             _levelPrice += ((_levelPrice * 5) / 100);
-        }
+
         require(isUserExists(user), "user doesn't exist");
         require(lvl > 0 && lvl <= lastLvl, "wrong level");
         require(!users[user].lvlIsAct[lvl], "level is already active");
         require(msg.value == _levelPrice, "wrong value");
         usersAtLvl[lvl]++;
-        if (users[user].Insurance[lvl]) {
+        if (users[user].Insurance[lvl])
             sendOnInsuranceAddr(lvl);
-        }
 
         users[user].lvlIsAct[lvl] = true;
         users[user].lvlWasAct[lvl] = true;
@@ -192,15 +172,13 @@ contract CryptoSpace {
 
         uint256 _lvlInRow;
         for (uint256 i = 1; i <= 15; i++) {
-            if (users[user].lvlIsAct[i] == false) {
+            if (users[user].lvlIsAct[i] == false)
                 break;
-            }
             _lvlInRow = i;
         }
         users[user].lvlInRow = _lvlInRow;
-        if (_lvlInRow > 8) {
+        if (_lvlInRow > 8)
             users[user].extraBR = BRPercent[_lvlInRow];
-        }
         updateStructure(user, freeSecondLvl[lvl], lvl);
     }
 
@@ -235,30 +213,19 @@ contract CryptoSpace {
     }
 
     function sendFreezedReferralRewards(uint256 lvl) external onlyOwner {
-        require(
-            block.timestamp >= refRewardsSendTime[lvl] &&
-                refRewardsSendTime[lvl] > 0,
-            "not available"
-        );
+        require(block.timestamp >= refRewardsSendTime[lvl] && refRewardsSendTime[lvl] > 0, "not available");
         require(numOfFrzdRefSave[lvl] != 1, "all rewards was sent");
         expLvl[lvl] = false;
-        if (nOfPA[lvl] > 0) {
+        if (nOfPA[lvl] > 0)
             sendFrzdRefRewInt(lvl);
-        }
     }
 
-    function updateStructure(
-        address user,
-        uint256 StrId,
-        uint256 lvl
-    ) private {
+    function updateStructure(address user, uint256 StrId, uint256 lvl) private {
         users[user].place[lvl] = lvlToStr[lvl].idToStr[StrId].freePlace;
         users[user].AbsPlace[lvl] = lvlToStr[lvl].freeAbsPlace;
         users[user].usersBP[lvl] = usersBeforeFirstPandingCounter(user, lvl);
 
-        lvlToStr[lvl].idToStr[StrId].secondStrLvl[
-            (lvlToStr[lvl].idToStr[StrId].freePlace) - 6
-        ] = user;
+        lvlToStr[lvl].idToStr[StrId].secondStrLvl[(lvlToStr[lvl].idToStr[StrId].freePlace) - 6] = user;
         lvlToStr[lvl].idToStr[StrId].freePlace++;
         lvlToStr[lvl].freeAbsPlace++;
         sendRewards(user, StrId, lvl);
@@ -269,9 +236,8 @@ contract CryptoSpace {
             users[user].place[lvl],
             users[user].Insurance[lvl]
         );
-        if (lvlToStr[lvl].idToStr[StrId].freePlace == 12) {
+        if (lvlToStr[lvl].idToStr[StrId].freePlace == 12)
             upgradeStructure(StrId, lvl);
-        }
     }
 
     function upgradeStructure(uint256 StrId, uint256 lvl) private {
@@ -282,14 +248,7 @@ contract CryptoSpace {
                 StrId: newMatrixId,
                 mainStrLvl: newMainStrLvl,
                 firstStrLvl: [address(0), address(0), address(0), address(0)],
-                secondStrLvl: [
-                    address(0),
-                    address(0),
-                    address(0),
-                    address(0),
-                    address(0),
-                    address(0)
-                ],
+                secondStrLvl: [address(0), address(0), address(0), address(0), address(0), address(0)],
                 freePlace: 2
             });
             lvlToStr[lvl].idToStr[newMatrixId] = structure;
@@ -304,13 +263,8 @@ contract CryptoSpace {
                 freeFirstLvl[lvl]++;
                 _freePlace = lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].freePlace;
             }
-            lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[
-                _freePlace - 2
-            ] = lvlToStr[lvl].idToStr[StrId].secondStrLvl[i];
-            users[
-                lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[
-                    _freePlace - 2
-                ]
+            lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[_freePlace - 2] = lvlToStr[lvl].idToStr[StrId].secondStrLvl[i];
+            users[lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[_freePlace - 2]
             ].place[lvl] = _freePlace;
             lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].freePlace++;
             _freePlace++;
@@ -321,9 +275,7 @@ contract CryptoSpace {
                 freeFirstLvl[lvl]++;
                 _freePlace = lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].freePlace;
             }
-            lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[
-                _freePlace - 2
-            ] = mainAddr;
+            lvlToStr[lvl].idToStr[freeFirstLvl[lvl]].firstStrLvl[_freePlace - 2] = mainAddr;
             users[mainAddr].place[lvl] = _freePlace;
             users[mainAddr].AbsPlace[lvl] = lvlToStr[lvl].freeAbsPlace;
             lvlToStr[lvl].freeAbsPlace++;
@@ -336,43 +288,30 @@ contract CryptoSpace {
             uint256 _lvlInRow = users[mainAddr].lvlInRow;
             if (_lvlInRow > 8 && lvl <= _lvlInRow) {
                 users[mainAddr].lvlInRow = lvl - 1;
-                if (users[mainAddr].lvlInRow > 8) {
+                if (users[mainAddr].lvlInRow > 8)
                     users[mainAddr].extraBR = BRPercent[_lvlInRow];
-                } else {
+                else 
                     users[mainAddr].extraBR = 0;
-                }
             }
         }
         freeSecondLvl[lvl]++;
     }
 
-    function sendRewards(
-        address user,
-        uint256 StrId,
-        uint256 lvl
-    ) private {
+    function sendRewards(address user, uint256 StrId, uint256 lvl) private {
         address payable rec;
         if (users[user].place[lvl] == 11) {
             rec = payable(lvlToStr[lvl].idToStr[StrId].mainStrLvl);
             users[rec].usersBP[lvl] = 0;
-        } else {
+        } else 
             if (users[user].place[lvl] == 8) {
                 rec = payable(lvlToStr[lvl].idToStr[StrId].mainStrLvl);
                 users[rec].usersBP[lvl] = 3;
-            } else {
-                if (users[user].place[lvl] < 8) {
-                    rec = payable(
-                        lvlToStr[lvl].idToStr[StrId].firstStrLvl[
-                            users[user].place[lvl] - 6
-                        ]
-                    );
-                } else {
-                    rec = payable(
-                        lvlToStr[lvl].idToStr[StrId].firstStrLvl[
-                            users[user].place[lvl] - 7
-                        ]
-                    );
-                }
+            } else 
+                if (users[user].place[lvl] < 8) 
+                    rec = payable(lvlToStr[lvl].idToStr[StrId].firstStrLvl[users[user].place[lvl] - 6]);
+                else
+                    rec = payable(lvlToStr[lvl].idToStr[StrId].firstStrLvl[users[user].place[lvl] - 7]);
+
                 if (users[rec].Insurance[lvl]) {
                     users[rec].Insurance[lvl] = false;
                     IPayments[rec] -= (lvlPrice[lvl] * 20) / 100;
@@ -383,27 +322,17 @@ contract CryptoSpace {
                         lastIUserId--;
                     }
                 }
-                users[rec].usersBP[lvl] = usersBeforeSecondPandingCounter(
-                    rec,
-                    lvl
-                );
-            }
-        }
+                users[rec].usersBP[lvl] = usersBeforeSecondPandingCounter(rec, lvl);
 
         uint256 BR;
-        if (users[rec].extraBR > 0) {
+        if (users[rec].extraBR > 0)
             BR = users[rec].extraBR;
-        } else {
+        else 
             BR = BRPercent[lvl];
-        }
         rec.transfer((lvlPrice[lvl] * BR) / 100);
         users[rec].gottenRewards[lvl] += (lvlPrice[lvl] * BR) / 100;
 
-        if (
-            expLvl[lvl] &&
-            refRewardsSendTime[lvl] > block.timestamp &&
-            refRewardsSendTime[lvl] > 0
-        ) {
+        if (expLvl[lvl] && refRewardsSendTime[lvl] > block.timestamp && refRewardsSendTime[lvl] > 0) {
             uint256 n = 1;
             address nextRef = user;
             while (n <= 7) {
@@ -411,13 +340,12 @@ contract CryptoSpace {
                 if (users[_ref].lvlWasAct[lvl]) {
                     n++;
                     nextRef = _ref;
-                } else {
-                    break;
-                }
+                } else
+                    break; 
             }
-            if (n == 8) {
+            if (n == 8)
                 sendRefRew(user, lvl);
-            } else {
+            else {
                 nOfPA[lvl]++;
                 nOfPASave[lvl]++;
                 pAddr[lvl][nOfPA[lvl]] = user;
@@ -425,19 +353,16 @@ contract CryptoSpace {
                 address _nextReferrer = user;
                 while (i <= 7) {
                     address _ref = users[_nextReferrer].ref;
-                    if (users[_ref].lvlWasAct[lvl]) {
+                    if (users[_ref].lvlWasAct[lvl])
                         i++;
-                    } else {
-                        users[_ref].frzdRefReward[lvl] +=
-                            (lvlPrice[lvl] * refPercent[i]) /
-                            100;
-                    }
+                    else
+                        users[_ref].frzdRefReward[lvl] +=(lvlPrice[lvl] * refPercent[i])/100;
                     _nextReferrer = _ref;
                 }
             }
-        } else {
+        } else
             sendRefRew(user, lvl);
-        }
+
         address payable _marketing = payable(owners[7]);
         uint256 marketingPercent = (77 - BR);
         _marketing.transfer((lvlPrice[lvl] * marketingPercent) / 100);
@@ -450,36 +375,28 @@ contract CryptoSpace {
             address payable _ref = payable(users[nextRef].ref);
             if (users[_ref].lvlWasAct[lvl]) {
                 _ref.transfer((lvlPrice[lvl] * refPercent[j]) / 100);
-                users[_ref].gottenRefReward[lvl] +=
-                    (lvlPrice[lvl] * refPercent[j]) /
-                    100;
+                users[_ref].gottenRefReward[lvl] += (lvlPrice[lvl] * refPercent[j])/100;
                 j++;
-            } else {
-                users[_ref].lostMoney[lvl] +=
-                    (lvlPrice[lvl] * refPercent[j]) /
-                    100;
-            }
+            } else
+                users[_ref].lostMoney[lvl] += (lvlPrice[lvl] * refPercent[j])/100;
+
             nextRef = _ref;
         }
     }
 
     function countFrzdRefRew(uint256 lvl) external onlyOwner {
-        require(
-            block.timestamp >= refRewardsSendTime[lvl] &&
-                refRewardsSendTime[lvl] > 0,
-            "not available"
-        );
-        uint256 f;
-        uint256 q;
-        if ((nOfPA[lvl] / 200) > 0) {
+        require(block.timestamp >= refRewardsSendTime[lvl] && refRewardsSendTime[lvl] > 0, "not available");
+        uint256 num1;
+        uint256 num2;
+        if ((nOfPA[lvl]/200) > 0) {
             nOfPA[lvl] -= 200;
-            f = nOfPASave[lvl] - nOfPA[lvl];
-            q = 199;
+            num1 = nOfPASave[lvl] - nOfPA[lvl];
+            num2 = 199;
         } else {
-            f = nOfPASave[lvl];
-            q = nOfPA[lvl] - 1;
+            num1 = nOfPASave[lvl];
+            num2 = nOfPA[lvl] - 1;
         }
-        for (uint256 i = f - q; i <= f; i++) {
+        for (uint256 i = num1 - num2; i <= num1; i++) {
             address nextRef = pAddr[lvl][i];
             uint256 j = 1;
             while (j <= 7) {
@@ -490,13 +407,10 @@ contract CryptoSpace {
                         numOfFrzdRef[lvl]++;
                         wRRAddr[lvl][numOfFrzdRef[lvl]] = _ref;
                     }
-                    wRR[lvl][_ref] += (lvlPrice[lvl] * refPercent[j]) / 100;
+                    wRR[lvl][_ref] += (lvlPrice[lvl] * refPercent[j])/100;
                     j++;
-                } else {
-                    users[_ref].lostMoney[lvl] +=
-                        (lvlPrice[lvl] * refPercent[j]) /
-                        100;
-                }
+                } else
+                    users[_ref].lostMoney[lvl] += (lvlPrice[lvl] * refPercent[j])/100;
                 nextRef = _ref;
             }
         }
@@ -504,19 +418,19 @@ contract CryptoSpace {
     }
 
     function sendFrzdRefRewInt(uint256 lvl) private {
-        uint256 f;
-        uint256 q;
-        if ((numOfFrzdRef[lvl] / 200) > 0) {
+        uint256 num1;
+        uint256 num2;
+        if ((numOfFrzdRef[lvl]/200) > 0) {
             numOfFrzdRef[lvl] -= 200;
-            f = numOfFrzdRefSave[lvl] - numOfFrzdRef[lvl];
-            q = 199;
+            num1 = numOfFrzdRefSave[lvl] - numOfFrzdRef[lvl];
+            num2 = 199;
         } else {
-            f = numOfFrzdRefSave[lvl];
-            q = numOfFrzdRef[lvl] - 1;
+            num1 = numOfFrzdRefSave[lvl];
+            num2 = numOfFrzdRef[lvl] - 1;
             numOfFrzdRefSave[lvl] = 1;
         }
-        for (uint256 k = f - q; k <= f; k++) {
-            address payable rec = payable(wRRAddr[lvl][k]);
+        for (uint256 i = num1 - num2; i <= num1; i++) {
+            address payable rec = payable(wRRAddr[lvl][i]);
             uint256 amount = wRR[lvl][rec];
             users[rec].gottenRefReward[lvl] += amount;
             rec.transfer(amount);
@@ -525,65 +439,45 @@ contract CryptoSpace {
 
     function sendOnInsuranceAddr(uint256 lvl) private {
         address payable rec = payable(owners[6]);
-        if (lvl == 0) {
+        if (lvl == 0)
             rec.transfer(registrationCost);
-        } else {
+        else
             rec.transfer((lvlPrice[lvl] * 5) / 100);
-        }
     }
 
     function writeIData() external onlyOwner {
-        uint256 f;
-        uint256 q;
-        if (lastIUserIdSave == 0) {
+        uint256 num1;
+        uint256 num2;
+        if (lastIUserIdSave == 0)
             lastIUserIdSave = lastIUserId;
-        }
         if ((lastIUserId / 200) > 0) {
             lastIUserId -= 200;
-            f = lastIUserIdSave - lastIUserId;
-            q = 199;
+            num1 = lastIUserIdSave - lastIUserId;
+            num2 = 199;
         } else {
-            f = lastIUserIdSave;
-            q = lastIUserId - 1;
+            num1 = lastIUserIdSave;
+            num2 = lastIUserId - 1;
             insuranceWasSent = true;
         }
-        for (uint256 i = f - q; i <= f; i++) {
+        for (uint256 i = num1 - num2; i <= num1; i++) {
             writeIDataInt(IPayments[IAddrs[i]], IAddrs[i]);
         }
     }
 
-    function getNumOfIAddr()
-        external
-        view
-        onlyOwner
-        returns (uint256 _numOfIAddr)
-    {
+    function getNumOfIAddr() external view onlyOwner returns (uint256 _numOfIAddr) {
         return (lastIUserId);
     }
 
-    function getNumOfRefAddr(uint256 lvl)
-        external
-        view
-        onlyOwner
-        returns (uint256 _numOfRefAddr)
-    {
+    function getNumOfRefAddr(uint256 lvl) external view onlyOwner returns (uint256 _numOfRefAddr) {
         return (nOfPASave[lvl]);
     }
 
     function writeIDataInt(uint256 Ipayment, address Iaddress) private {
-        (bool success, bytes memory data) = owners[6].call(
-            abi.encodeWithSignature(
-                "writeInsuranceDates(uint256,address)",
-                Ipayment,
-                Iaddress
-            )
-        );
+        (bool success, bytes memory data) = owners[6].call(abi.encodeWithSignature("writeInsuranceDates(uint256,address)", Ipayment, Iaddress));
     }
 
     function paymentOfInsurance() external onlyOwner {
-        (bool success, bytes memory data) = owners[6].call(
-            abi.encodeWithSignature("payment()")
-        );
+        (bool success, bytes memory data) = owners[6].call(abi.encodeWithSignature("payment()"));
     }
 
     function getNumOfFrzdRef(uint256 lvl)
@@ -599,53 +493,24 @@ contract CryptoSpace {
         return (users[user].id != 0);
     }
 
-    function usersBeforeFirstPandingCounter(address user, uint256 lvl)
-        private
-        view
-        returns (uint256)
-    {
+    function usersBeforeFirstPandingCounter(address user, uint256 lvl) private view returns (uint256) {
         uint256 n = users[user].AbsPlace[lvl];
-        if (n % 2 == 0) {
-            return (((n - 4) / 2) +
-                5 +
-                reinvCount[lvl] +
-                (reinvCount[lvl] / 2));
-        } else {
-            return (((n - 5) / 2) +
-                5 +
-                reinvCount[lvl] +
-                ((reinvCount[lvl] + 1) / 2));
-        }
+        if (n % 2 == 0) 
+            return (((n - 4) / 2) + 5 + reinvCount[lvl] + (reinvCount[lvl] / 2));
+        else 
+            return (((n - 5) / 2) + 5 + reinvCount[lvl] + ((reinvCount[lvl] + 1) / 2));
+        
     }
 
-    function usersBeforeSecondPandingCounter(address user, uint256 lvl)
-        private
-        view
-        returns (uint256)
-    {
-        return (6 *
-            (users[user].AbsPlace[lvl] -
-                lvlToStr[lvl].idToStr[freeSecondLvl[lvl]].StrId -
-                1) +
-            15 -
-            lvlToStr[lvl].idToStr[freeSecondLvl[lvl]].freePlace);
+    function usersBeforeSecondPandingCounter(address user, uint256 lvl) private view returns (uint256) {
+        return (6 * (users[user].AbsPlace[lvl] - lvlToStr[lvl].idToStr[freeSecondLvl[lvl]].StrId - 1) + 15 - lvlToStr[lvl].idToStr[freeSecondLvl[lvl]].freePlace);
     }
 
-    function availableLevels()
-        external
-        view
-        onlyOwner
-        returns (bool[16] memory)
-    {
+    function availableLevels() external view onlyOwner returns (bool[16] memory) {
         return (lvlIsAv);
     }
 
-    function getlevelPrices()
-        external
-        view
-        onlyOwner
-        returns (uint256[16] memory levelPrices)
-    {
+    function getlevelPrices() external view onlyOwner returns (uint256[16] memory levelPrices) {
         uint256[16] memory _levelPrices;
         for (uint256 i = 1; i < 16; i++) {
             _levelPrices[i] = lvlPrice[i];
@@ -653,10 +518,7 @@ contract CryptoSpace {
         return (_levelPrices);
     }
 
-    function userSiteDataes(address user)
-        external
-        view
-        onlyOwner
+    function userSiteDataes(address user) external view onlyOwner
         returns (
             uint256 extraBR,
             uint256[16] memory lostMoney,
@@ -666,8 +528,7 @@ contract CryptoSpace {
             bool[16] memory insurance,
             uint256[16] memory userRewards,
             uint256[16] memory userReferralRewards
-        )
-    {
+        ) {
         address ad = user;
         uint256[16] memory _lostMoney;
         bool[16] memory _levelWasActivated;
@@ -697,12 +558,7 @@ contract CryptoSpace {
         );
     }
 
-    function userSiteDatesTwo(address user)
-        external
-        view
-        onlyOwner
-        returns (uint256[16] memory freezedReferralReward)
-    {
+    function userSiteDatesTwo(address user) external view onlyOwner returns (uint256[16] memory freezedReferralReward) {
         uint256[16] memory _freezedReferralReward;
         for (uint256 i = 1; i < 16; i++) {
             _freezedReferralReward[i] = users[user].frzdRefReward[i];
@@ -710,12 +566,7 @@ contract CryptoSpace {
         return (_freezedReferralReward);
     }
 
-    function levelStartTimeDates()
-        external
-        view
-        onlyOwner
-        returns (uint256[16] memory levelsStartTime)
-    {
+    function levelStartTimeDates() external view onlyOwner returns (uint256[16] memory levelsStartTime) {
         uint256[16] memory _levelStartTime;
         for (uint256 i = 1; i < 16; i++) {
             _levelStartTime[i] = levelStartTime[i];
@@ -723,15 +574,7 @@ contract CryptoSpace {
         return (_levelStartTime);
     }
 
-    function paymentProgressDates(address user)
-        external
-        view
-        onlyOwner
-        returns (
-            uint256[16] memory userAbsolutePlace,
-            uint256[16] memory reinvest
-        )
-    {
+    function paymentProgressDates(address user) external view onlyOwner returns (uint256[16] memory userAbsolutePlace, uint256[16] memory reinvest) {
         uint256[16] memory _userAbsolutePlace;
         uint256[16] memory _reinvest;
         for (uint256 i = 1; i < 16; i++) {
@@ -741,12 +584,7 @@ contract CryptoSpace {
         return (_userAbsolutePlace, _reinvest);
     }
 
-    function userAtLevelDates()
-        external
-        view
-        onlyOwner
-        returns (uint256[16] memory usersAtTheLevel)
-    {
+    function userAtLevelDates() external view onlyOwner returns (uint256[16] memory usersAtTheLevel) {
         uint256[16] memory _usersAtLvl;
         for (uint256 i = 1; i < 16; i++) {
             _usersAtLvl[i] = usersAtLvl[i];
