@@ -28,19 +28,18 @@ Also you can see tests of this contract with 3 scenarios, written on the python,
 - **-** **`registration`** - Registration in the system. Gets address of user's upline.
 - **-** **`buyNewLvl`** - Buying level in the matrix system with insurance. Gets number of level (max is 15 level).
 - **-** **`buyNewLvlWI`** - Buying level in the matrix system without insurance. Gets number of level (max is 15 level).
+
 ### Owner functions
 - **-** **`setlevelStartTime`** - Sets the opening time of the level. Gets number of the level and time in UNIX.
 - **-** **`countFrzdRefRew`** - Counts referral reward after 10 minutes waiting for each user (have to be called before 'sendFreezedReferralRewards'). Gets number of the level.
 - **-** **`sendFreezedReferralRewards`** - Sents referral reward after 10 minutes waiting. Gets number of the level.
 - **-** **`writeIData`** - Writes insuranse data in the smartcontract insuranse.sol (have to be called before 'paymentOfInsurance').
 - **-** **`paymentOfInsurance`** - Sent insuranse payments from insuranse.sol.
-## Distribute
-
-- [Service Name](Page Link)
-
 
 ## Developers
 
-- [Delevoper Name](GitHub Profile Link)
+- [dimokrit](https://github.com/dimokrit)
 
 ## License
+
+- Project CryptoSpace.Matrix is distributed under the MIT license
