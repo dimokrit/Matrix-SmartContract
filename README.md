@@ -3,9 +3,8 @@
 </p>
 
 <p align="center">
-   <img src="" alt="Unity Version">
-   <img src="" alt="Game Version">
-   <img src="" alt="License">
+   <img src="https://img.shields.io/badge/Solidity-0.8.9-lightgrey" alt="Solidity Version">
+   <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
 </p>
 
 ## About
