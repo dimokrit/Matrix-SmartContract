@@ -20,7 +20,7 @@ The system of freezes gives users 10 minutes after opening a level, for buying t
 The insurance gives the user a guarantee of receiving 20% of the cost of the level, if he does not receive at least one payment from it before the end of the project.
 Storage and realization of the insuranse is written in the insuranse.sol.
 
-Also you can see tests of this contract with 3 scenarios, written on the python, using HardHat.
+Also you can see tests of this contract with 3 scenarios, written on the JS, using HardHat.
       
 ## Documentation
 
@@ -39,6 +39,7 @@ Also you can see tests of this contract with 3 scenarios, written on the python,
 ## Developers
 
 - [dimokrit](https://github.com/dimokrit)
+- [Aar0nWalker](https://github.com/Aar0nWalker)
 
 ## License
 
