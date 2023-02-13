@@ -39,9 +39,9 @@ Also you can see tests of this contract with 3 scenarios, written on the JS, usi
 
 ## Developers
 
-- [dimokrit](https://github.com/dimokrit)
-- [Aar0nWalker](https://github.com/Aar0nWalker)
+[dimokrit](https://github.com/dimokrit)
+[Aar0nWalker](https://github.com/Aar0nWalker)
 
 ## License
 
-- Project CryptoSpace.Matrix is distributed under the MIT license
+Project CryptoSpace.Matrix is distributed under the MIT license
